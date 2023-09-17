@@ -1,4 +1,5 @@
-﻿using Entity;
+﻿using AutoMapper;
+using Entity;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using TodoWebApi.DtoModels;
@@ -10,12 +11,14 @@ namespace TodoWebApi.Controllers
     public class TodoController : ControllerBase
     {
         private readonly ITodoRepository _repository;
-        public TodoController(ITodoRepository repository)
+        private readonly IMapper _mapper;
+        public TodoController(ITodoRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
         [HttpGet]
-        public async Task<ActionResult<TodoDbModel>> GetTodo(int id)
+        public async Task<ActionResult<TodoDtoModel>> GetTodo(int id)
         {
             var todo = await _repository.GetTodo(id);
 
@@ -24,7 +27,7 @@ namespace TodoWebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(todo);
+            return Ok(_mapper.Map<TodoDtoModel>(todo));
         }
 
         [HttpPost]
