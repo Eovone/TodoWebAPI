@@ -5,9 +5,11 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoWebApi", "TodoWebApi\TodoWebApi.csproj", "{842609B1-4CD7-40D2-BE92-8BE7FF8CFB8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "Entity\Entity.csproj", "{1A84FF4E-2FB1-4B02-9D24-A3A39E8769E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entity", "Entity\Entity.csproj", "{1A84FF4E-2FB1-4B02-9D24-A3A39E8769E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7DEE94A8-C3BB-43F7-95B3-5D1D866DD7C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7DEE94A8-C3BB-43F7-95B3-5D1D866DD7C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoWebApi.Tests", "TodoWebApi.Tests\TodoWebApi.Tests.csproj", "{523703BE-36A8-40C1-AF65-C6609866D65C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{7DEE94A8-C3BB-43F7-95B3-5D1D866DD7C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DEE94A8-C3BB-43F7-95B3-5D1D866DD7C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DEE94A8-C3BB-43F7-95B3-5D1D866DD7C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{523703BE-36A8-40C1-AF65-C6609866D65C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{523703BE-36A8-40C1-AF65-C6609866D65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{523703BE-36A8-40C1-AF65-C6609866D65C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{523703BE-36A8-40C1-AF65-C6609866D65C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
