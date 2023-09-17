@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
 using Infrastructure.Repositories;
+using TodoWebApi.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<TodoContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
