@@ -6,6 +6,6 @@ namespace Infrastructure.Repositories
     {
         Task<TodoDbModel> AddTodo(TodoDbModel todo);
         Task<TodoDbModel> GetTodo(int id);
-        Task<List<TodoDbModel>> GetAllTodos();
+        Task<List<TodoDbModel>> GetAllTodos(int limit);
     }
 }

@@ -32,9 +32,9 @@ namespace TodoWebApi.Controllers
 
         [Route("GetAllTodos")]
         [HttpGet]
-        public async Task<ActionResult<List<TodoDtoModel>>> GetAllTodos()
+        public async Task<ActionResult<List<TodoDtoModel>>> GetAllTodos(int limit)
         {
-            var todos = await _repository.GetAllTodos();
+            var todos = await _repository.GetAllTodos(limit);
 
             if(todos == null) 
             {

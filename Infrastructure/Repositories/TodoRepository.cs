@@ -19,9 +19,14 @@ namespace Infrastructure.Repositories
             return todo;
         }
 
-        public async Task<List<TodoDbModel>> GetAllTodos()
+        public async Task<List<TodoDbModel>> GetAllTodos(int limit)
         {
-            return await _context.Todos.ToListAsync();
+            if (limit == 0 || limit == null)
+            {
+                return await _context.Todos.ToListAsync();
+            }
+
+            return await _context.Todos.Take(limit).ToListAsync();
         }
 
         public async Task<TodoDbModel> GetTodo(int id)
