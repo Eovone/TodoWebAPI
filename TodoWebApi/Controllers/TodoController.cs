@@ -30,6 +30,20 @@ namespace TodoWebApi.Controllers
             return Ok(_mapper.Map<TodoDtoModel>(todo));
         }
 
+        [Route("GetAllTodos")]
+        [HttpGet]
+        public async Task<ActionResult<List<TodoDtoModel>>> GetAllTodos()
+        {
+            var todos = await _repository.GetAllTodos();
+
+            if(todos == null) 
+            {
+                return NotFound("No Todos Exist");
+            }
+
+            return Ok(todos);
+        }
+
         [HttpPost]
         public async Task<ActionResult<TodoDbModel>> PostTodo(TodoDbModel todoDb)
         {

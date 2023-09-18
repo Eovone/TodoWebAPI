@@ -1,4 +1,5 @@
 ﻿using Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -16,6 +17,11 @@ namespace Infrastructure.Repositories
             await _context.SaveChangesAsync();
 
             return todo;
+        }
+
+        public async Task<List<TodoDbModel>> GetAllTodos()
+        {
+            return await _context.Todos.ToListAsync();
         }
 
         public async Task<TodoDbModel> GetTodo(int id)
