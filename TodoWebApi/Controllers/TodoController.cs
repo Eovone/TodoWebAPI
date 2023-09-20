@@ -41,7 +41,9 @@ namespace TodoWebApi.Controllers
                 return NotFound("No Todos Exist");
             }
 
-            return Ok(todos);
+            var todosDto = _mapper.Map<List<TodoDtoModel>>(todos);
+
+            return Ok(todosDto);
         }
 
         [HttpPost]
