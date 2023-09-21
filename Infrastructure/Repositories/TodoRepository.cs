@@ -19,9 +19,24 @@ namespace Infrastructure.Repositories
             return todo;
         }
 
+        public async Task<TodoDbModel> DeleteTodo(int id)
+        {
+            var todo =_context.Todos.FindAsync(id);
+
+            if(todo.Result == null)
+            {
+                return null;
+            }
+
+            _context.Todos.Remove(todo.Result);
+            await _context.SaveChangesAsync();
+
+            return todo.Result;
+        }
+
         public async Task<List<TodoDbModel>> GetAllTodos(int limit)
         {
-            if (limit == 0 || limit == null)
+            if (limit == 0)
             {
                 return await _context.Todos.ToListAsync();
             }
