@@ -108,5 +108,28 @@ namespace TodoWebApi.Controllers
             }
             
         }
+
+        [HttpPut]
+        public async Task<ActionResult<TodoDtoModel>> UpdateTodo(TodoDtoModel todoDto)
+        {
+            try
+            {
+                var updatedTodo = await _repository.UpdateTodo(_mapper.Map<TodoDbModel>(todoDto));
+                if (updatedTodo == null)
+                {
+                    _logger.LogWarning($"Updating Todo with Id: {todoDto.Id}, does not exist.");
+                    return NotFound();
+                }
+
+                var updatedTodoDto = _mapper.Map<TodoDtoModel>(updatedTodo);
+                _logger.LogInformation($"Updating Todo with Id: {updatedTodoDto.Id}, was successful.");
+                return Ok(updatedTodo);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error while updating Todo with Id: {todoDto.Id}.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
     }
 }
