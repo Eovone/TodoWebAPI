@@ -48,5 +48,23 @@ namespace Infrastructure.Repositories
         {
             return await _context.Todos.FindAsync(id);
         }
+
+        public async Task<TodoDbModel> UpdateTodo(TodoDbModel todo)
+        {
+            var todoToUpdate = _context.Todos.FindAsync(todo.Id);
+
+            if(todoToUpdate.Result == null)
+            {
+                return null;
+            }
+
+            todoToUpdate.Result.Title = todo.Title;
+            todoToUpdate.Result.Description = todo.Description;
+            todoToUpdate.Result.Completed = todo.Completed;
+
+            await _context.SaveChangesAsync();
+
+            return (todoToUpdate.Result);
+        }
     }
 }
