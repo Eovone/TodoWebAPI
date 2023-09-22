@@ -1,0 +1,67 @@
+﻿using AutoMapper;
+using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using TodoWebApi.Controllers;
+using Moq;
+using Entity;
+
+namespace TodoWebApi.Tests.Controllers
+{
+    public class TodoControllerTests
+    {
+        private readonly Mock<ITodoRepository> _todoRepositoryMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<ILogger<TodoController>> _loggerMock;
+
+        public TodoControllerTests()
+        {
+            _todoRepositoryMock = new Mock<ITodoRepository>();
+            _mapperMock = new Mock<IMapper>();
+            _loggerMock = new Mock<ILogger<TodoController>>();
+        }
+
+        [Fact]
+        public async Task TodoController_GetAllTodos_WithData_Return200()
+        {
+            var fakeTodos = new List<TodoDbModel>();
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(0)).ReturnsAsync(fakeTodos);
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.GetAllTodos(0);
+
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.Equal(200, okResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_GetAllTodos_NoData_Return404()
+        {
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(It.IsAny<int>())).ReturnsAsync((List<TodoDbModel>)null);
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.GetAllTodos(0);
+
+            Assert.NotNull(result);
+            Assert.IsType<NotFoundResult>(result.Result);
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.Equal(404, notFoundResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_GetAllTodos_WithError_Return500()
+        {
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(It.IsAny<int>())).ThrowsAsync(new Exception("Simulated Exception"));
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.GetAllTodos(0);
+
+            Assert.NotNull(result);
+            Assert.IsType<ObjectResult>(result.Result);
+            var objectResult = result.Result as ObjectResult;
+            Assert.Equal(500, objectResult.StatusCode);
+        }
+    }
+}
