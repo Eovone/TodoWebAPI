@@ -106,5 +106,35 @@ namespace TodoWebApi.Tests.Controllers
             var objectResult = result.Result as ObjectResult;
             Assert.Equal(500, objectResult.StatusCode);         
         }
+
+        [Fact]
+        public async Task TodoController_PostTodo_Successful_Return201()
+        {
+            var fakePostTodo = new TodoDbModel { Title = "TestTitle", Description = "TestDescription", Completed = false };
+            _todoRepositoryMock.Setup(repo => repo.AddTodo(fakePostTodo)).ReturnsAsync(fakePostTodo);
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.PostTodo(fakePostTodo);
+
+            Assert.NotNull(result);
+            Assert.IsType<CreatedAtActionResult>(result.Result);
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
+            Assert.Equal(201, createdAtActionResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_PostTodo_Fails_Return500()
+        {
+            var fakePostTodo = new TodoDbModel { Title = "TestTitle", Description = "TestDescription", Completed = false };
+            _todoRepositoryMock.Setup(repo => repo.AddTodo(fakePostTodo)).ThrowsAsync(new Exception("Test Exception"));
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.PostTodo(fakePostTodo);
+
+            Assert.NotNull(result);
+            Assert.IsType<ObjectResult>(result.Result);
+            var objectResult = result.Result as ObjectResult;
+            Assert.Equal(500, objectResult.StatusCode);
+        }
     }
 }
