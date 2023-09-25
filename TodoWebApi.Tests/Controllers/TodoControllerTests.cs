@@ -136,5 +136,50 @@ namespace TodoWebApi.Tests.Controllers
             var objectResult = result.Result as ObjectResult;
             Assert.Equal(500, objectResult.StatusCode);
         }
+
+        [Fact]
+        public async Task TodoController_DeleteTodo_Found_Return204()
+        {
+            var fakeTodo = new TodoDbModel { Id = 1 };
+            _todoRepositoryMock.Setup(repo => repo.DeleteTodo(fakeTodo.Id)).ReturnsAsync(fakeTodo);
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.DeleteTodo(fakeTodo.Id);
+
+            Assert.NotNull(result);
+            Assert.IsType<NoContentResult>(result);
+            var noContentResult = result as NoContentResult;
+            Assert.Equal(204, noContentResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_DeleteTodo_NotFound_Return404()
+        {
+            var fakeTodo = new TodoDbModel { Id = 1 };
+            _todoRepositoryMock.Setup(repo => repo.DeleteTodo(fakeTodo.Id)).ReturnsAsync((TodoDbModel)null);
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.DeleteTodo(fakeTodo.Id);
+
+            Assert.NotNull(result);
+            Assert.IsType<NotFoundResult>(result);
+            var notFoundResult = result as NotFoundResult;
+            Assert.Equal(404, notFoundResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_DeleteTodo_Fails_Return500()
+        {
+            var fakeTodo = new TodoDbModel { Id = 1 };
+            _todoRepositoryMock.Setup(repo => repo.DeleteTodo(fakeTodo.Id)).ThrowsAsync(new Exception("Test Exception"));
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.DeleteTodo(fakeTodo.Id);
+
+            Assert.NotNull(result);
+            Assert.IsType<ObjectResult>(result);
+            var objectResult = result as ObjectResult;
+            Assert.Equal(500, objectResult.StatusCode);
+        }
     }
 }
