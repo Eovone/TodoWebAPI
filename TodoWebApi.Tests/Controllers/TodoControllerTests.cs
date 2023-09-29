@@ -221,5 +221,99 @@ namespace TodoWebApi.Tests.Controllers
             var objectResult = result as ObjectResult;
             Assert.Equal(500, objectResult.StatusCode);
         }
+
+        [Fact]
+        public async Task TodoController_UpdateTodo_Succuessful_Return200()
+        {
+            var updatedTodoDb = new TodoDbModel
+            {
+                Id = 1,
+                Title = "Updated Todo",
+                Description = "Updated Description",
+                Completed = true
+            };
+            
+            _todoRepositoryMock.Setup(repo => repo.UpdateTodo(It.IsAny<TodoDbModel>()))
+                               .ReturnsAsync(updatedTodoDb);
+
+            var todoDtoToUpdate = new TodoDtoModel
+            {
+                Id = 1,
+                Title = "Updated Todo",
+                Description = "Updated Description",
+                Completed = true
+            };
+
+            _mapperMock.Setup(x => x.Map<TodoDtoModel>(It.IsAny<TodoDbModel>()))
+                       .Returns((TodoDbModel dbModel) => new TodoDtoModel
+                       {
+                           Id = dbModel.Id,
+                           Title = dbModel.Title,
+                           Description = dbModel.Description,
+                           Completed = dbModel.Completed
+                       });            
+
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.UpdateTodo(todoDtoToUpdate);
+
+            var objectResult = result.Result as ObjectResult;
+            Assert.NotNull(objectResult);
+            Assert.Equal(200, objectResult.StatusCode);
+
+            var updatedTodoDto = objectResult.Value as TodoDtoModel;
+            Assert.NotNull(updatedTodoDto);
+            Assert.Equal(todoDtoToUpdate.Id, updatedTodoDto.Id);
+            Assert.Equal(todoDtoToUpdate.Title, updatedTodoDto.Title);
+            Assert.Equal(todoDtoToUpdate.Description, updatedTodoDto.Description);
+            Assert.Equal(todoDtoToUpdate.Completed, updatedTodoDto.Completed);
+        }
+
+        [Fact]
+        public async Task TodoController_UpdateTodo_NotFound_Return404()
+        {
+            var todoDtoToUpdate = new TodoDtoModel
+            {
+                Id = 1,
+                Title = "Updated Todo",
+                Description = "Updated Description",
+                Completed = true
+            };
+
+            _todoRepositoryMock.Setup(repo => repo.UpdateTodo(It.IsAny<TodoDbModel>()))
+                               .ReturnsAsync((TodoDbModel)null);
+
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.UpdateTodo(todoDtoToUpdate);
+
+            Assert.IsType<NotFoundResult>(result.Result);
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.Equal(404, notFoundResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task TodoController_UpdateTodo_Fails_Return500()
+        {
+            var todoDtoToUpdate = new TodoDtoModel
+            {
+                Id = 1,
+                Title = "Updated Todo",
+                Description = "Updated Description",
+                Completed = true
+            };
+
+            _todoRepositoryMock.Setup(repo => repo.UpdateTodo(It.IsAny<TodoDbModel>()))
+                               .ThrowsAsync(new Exception("Test Exception"));
+
+            var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
+
+            var result = await sut.UpdateTodo(todoDtoToUpdate);
+
+            Assert.IsType<ObjectResult>(result.Result);
+            var statusCodeResult = result.Result as ObjectResult;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+            Assert.Equal("Internal Server Error", statusCodeResult.Value);
+        }
     }
 }
