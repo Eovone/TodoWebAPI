@@ -123,7 +123,7 @@ namespace TodoWebApi.Controllers
 
                 var updatedTodoDto = _mapper.Map<TodoDtoModel>(updatedTodo);
                 _logger.LogInformation($"Updating Todo with Id: {updatedTodoDto.Id}, was successful.");
-                return Ok(updatedTodo);
+                return Ok(updatedTodoDto);
             }
             catch (Exception e)
             {
