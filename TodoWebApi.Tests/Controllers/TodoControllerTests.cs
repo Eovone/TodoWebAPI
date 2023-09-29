@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using TodoWebApi.Controllers;
 using Moq;
 using Entity;
+using TodoWebApi.DtoModels;
 
 namespace TodoWebApi.Tests.Controllers
 {
@@ -24,27 +25,60 @@ namespace TodoWebApi.Tests.Controllers
         [Fact]
         public async Task TodoController_GetAllTodos_WithData_Return200()
         {
-            var fakeTodos = new List<TodoDbModel>();
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(0)).ReturnsAsync(fakeTodos);
+            var page = 1;
+            var pageSize = 3;
+            var filter = "all";    
+
+            var testData = new List<TodoDbModel>
+            {
+                new TodoDbModel { Id = 1, Title = "Todo 1", Description = "hehe1", Completed = false },
+                new TodoDbModel { Id = 2, Title = "Todo 2", Description = "hehe2", Completed = true },
+                new TodoDbModel { Id = 3, Title = "Todo 3", Description = "hehe3", Completed = true },
+            };
+
+            _mapperMock.Setup(x => x.Map<List<TodoDtoModel>>(It.IsAny<List<TodoDbModel>>()))
+                       .Returns<List<TodoDbModel>>(input => input.Select(dbModel => new TodoDtoModel
+            {
+                Id = dbModel.Id,
+                Title = dbModel.Title,
+                Description = dbModel.Description,
+                Completed = dbModel.Completed
+            }).ToList());
+
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+                               .ReturnsAsync(testData);
+
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
 
-            var result = await sut.GetAllTodos(0);
+            var result = await sut.GetAllTodos(page, pageSize, filter);
 
-            Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result.Result);
-            var okResult = result.Result as OkObjectResult;
-            Assert.Equal(200, okResult.StatusCode);
+            var objectResult = result.Result as OkObjectResult;
+            Assert.NotNull(objectResult);
+            Assert.Equal(200, objectResult.StatusCode);
+
+            var value = objectResult.Value;
+            Assert.IsType<List<TodoDtoModel>>(value);
+            var todosDto = (List<TodoDtoModel>)value;
+            Assert.Equal(3, todosDto.Count);
+            Assert.Equal(1, todosDto[0].Id);
+            Assert.Equal(2, todosDto[1].Id);
+            Assert.Equal(3, todosDto[2].Id);
         }
 
         [Fact]
         public async Task TodoController_GetAllTodos_NoData_Return404()
         {
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(It.IsAny<int>())).ReturnsAsync((List<TodoDbModel>)null);
+            var page = 1;
+            var pageSize = 3;
+            var filter = "all";
+
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+                               .ReturnsAsync((List<TodoDbModel>)null);
+
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
 
-            var result = await sut.GetAllTodos(0);
+            var result = await sut.GetAllTodos(page, pageSize, filter);
 
-            Assert.NotNull(result);
             Assert.IsType<NotFoundResult>(result.Result);
             var notFoundResult = result.Result as NotFoundResult;
             Assert.Equal(404, notFoundResult.StatusCode);
@@ -53,15 +87,21 @@ namespace TodoWebApi.Tests.Controllers
         [Fact]
         public async Task TodoController_GetAllTodos_WithError_Return500()
         {
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(It.IsAny<int>())).ThrowsAsync(new Exception("Test Exception"));
+            var page = 1;
+            var pageSize = 3;
+            var filter = "all";
+
+            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+                .ThrowsAsync(new Exception("Test Exception"));
+
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
 
-            var result = await sut.GetAllTodos(0);
+            var result = await sut.GetAllTodos(page, pageSize, filter);
 
-            Assert.NotNull(result);
             Assert.IsType<ObjectResult>(result.Result);
-            var objectResult = result.Result as ObjectResult;
-            Assert.Equal(500, objectResult.StatusCode);
+            var statusCodeResult = result.Result as ObjectResult;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+            Assert.Equal("Internal Server Error", statusCodeResult.Value);
         }
 
         [Fact]

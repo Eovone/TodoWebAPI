@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories
     {
         Task<TodoDbModel> AddTodo(TodoDbModel todo);
         Task<TodoDbModel> GetTodo(int id);
-        Task<List<TodoDbModel>> GetAllTodos(int limit);
+        Task<List<TodoDbModel>> GetAllTodos(int page, int pageSize, string filter);
         Task<TodoDbModel> DeleteTodo(int id);
         Task<TodoDbModel> UpdateTodo(TodoDbModel todo);
     }

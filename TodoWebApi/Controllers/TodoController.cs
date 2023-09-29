@@ -45,11 +45,11 @@ namespace TodoWebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<TodoDtoModel>>> GetAllTodos(int limit)
+        public async Task<ActionResult<List<TodoDtoModel>>> GetAllTodos(int page, int pageSize, string filter)
         {            
             try
             {
-                var todos = await _repository.GetAllTodos(limit);
+                var todos = await _repository.GetAllTodos(page, pageSize, filter);
                 if (todos == null)
                 {
                     _logger.LogWarning("No Todos Exist");

@@ -34,14 +34,28 @@ namespace Infrastructure.Repositories
             return todo.Result;
         }
 
-        public async Task<List<TodoDbModel>> GetAllTodos(int limit)
+        public async Task<List<TodoDbModel>> GetAllTodos(int page, int pageSize, string filter)
         {
-            if (limit == 0)
+            if (pageSize <= 0)
             {
                 return await _context.Todos.ToListAsync();
             }
 
-            return await _context.Todos.Take(limit).ToListAsync();
+            int offset = (page - 1) * pageSize;
+
+            if (filter == "all")
+            {
+                return await _context.Todos.Skip(offset)
+                                           .OrderBy(t => t.Id)
+                                           .Take(pageSize)
+                                           .ToListAsync();
+            }  
+            
+            return await _context.Todos.Where(filter == "notdone" ? todo => todo.Completed == false : todo => todo.Completed == true)
+                                        .Skip(offset)
+                                        .OrderBy(t => t.Id)
+                                        .Take(pageSize)
+                                        .ToListAsync();    
         }
 
         public async Task<TodoDbModel> GetTodo(int id)
