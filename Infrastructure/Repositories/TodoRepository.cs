@@ -46,14 +46,14 @@ namespace Infrastructure.Repositories
             if (filter == "all")
             {
                 return await _context.Todos.Skip(offset)
-                                           .OrderBy(t => t.Id)
+                                           .OrderBy(t => t.Deadline)
                                            .Take(pageSize)
                                            .ToListAsync();
             }  
             
             return await _context.Todos.Where(filter == "notdone" ? todo => todo.Completed == false : todo => todo.Completed == true)
                                         .Skip(offset)
-                                        .OrderBy(t => t.Id)
+                                        .OrderBy(t => t.Deadline)
                                         .Take(pageSize)
                                         .ToListAsync();    
         }
@@ -75,6 +75,7 @@ namespace Infrastructure.Repositories
             todoToUpdate.Result.Title = todo.Title;
             todoToUpdate.Result.Description = todo.Description;
             todoToUpdate.Result.Completed = todo.Completed;
+            todoToUpdate.Result.Deadline = todo.Deadline;
 
             await _context.SaveChangesAsync();
 
