@@ -49,7 +49,7 @@ namespace TodoWebApi.Controllers
         {            
             try
             {
-                var todos = await _repository.GetAllTodos(page, pageSize, filter);
+                var todos = await _repository.GetTodos(page, pageSize, filter);
                 if (todos == null)
                 {
                     _logger.LogWarning("No Todos Exist");
@@ -57,12 +57,12 @@ namespace TodoWebApi.Controllers
                 }
                 var todosDto = _mapper.Map<List<TodoDtoModel>>(todos);
 
-                _logger.LogInformation("Fetching all Todos successful");
+                _logger.LogInformation("Fetching Todos successful");
                 return Ok(todosDto);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error while fetching all Todos");
+                _logger.LogError(e, "Error while fetching Todos");
                 return StatusCode(500, "Internal Server Error");
             }
         }

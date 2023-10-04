@@ -23,10 +23,7 @@ namespace Infrastructure.Repositories
         {
             var todo =_context.Todos.FindAsync(id);
 
-            if(todo.Result == null)
-            {
-                return null;
-            }
+            if (todo.Result == null) return null;            
 
             _context.Todos.Remove(todo.Result);
             await _context.SaveChangesAsync();
@@ -34,22 +31,16 @@ namespace Infrastructure.Repositories
             return todo.Result;
         }
 
-        public async Task<List<TodoDbModel>> GetAllTodos(int page, int pageSize, string filter)
+        public async Task<List<TodoDbModel>> GetTodos(int page, int pageSize, string filter)
         {
-            if (pageSize <= 0)
-            {
-                return await _context.Todos.ToListAsync();
-            }
+            if (pageSize <= 0) return await _context.Todos.ToListAsync();            
 
             int offset = (page - 1) * pageSize;
 
-            if (filter == "all")
-            {
-                return await _context.Todos.Skip(offset)
-                                           .OrderBy(t => t.Deadline)
-                                           .Take(pageSize)
-                                           .ToListAsync();
-            }  
+            if (filter == "all") return await _context.Todos.Skip(offset)
+                                                            .OrderBy(t => t.Deadline)
+                                                            .Take(pageSize)
+                                                            .ToListAsync();             
             
             return await _context.Todos.Where(filter == "notdone" ? todo => todo.Completed == false : todo => todo.Completed == true)
                                         .Skip(offset)
@@ -67,10 +58,7 @@ namespace Infrastructure.Repositories
         {
             var todoToUpdate = _context.Todos.FindAsync(todo.Id);
 
-            if(todoToUpdate.Result == null)
-            {
-                return null;
-            }
+            if(todoToUpdate.Result == null) return null;           
 
             todoToUpdate.Result.Title = todo.Title;
             todoToUpdate.Result.Description = todo.Description;
