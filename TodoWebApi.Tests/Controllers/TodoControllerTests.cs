@@ -107,7 +107,15 @@ namespace TodoWebApi.Tests.Controllers
         [Fact]
         public async Task TodoController_GetTodo_WithData_Return200()
         {
-            var fakeTodo = new TodoDbModel{ Id = 1 };
+            var fakeTodo = new TodoDbModel{ Id = 1 , Title = "FakeTitle"};
+
+            _mapperMock.Setup(x => x.Map<TodoDtoModel>(fakeTodo))
+               .Returns(new TodoDtoModel
+               {
+                   Id = fakeTodo.Id,
+                   Title = fakeTodo.Title,                   
+               });
+
             _todoRepositoryMock.Setup(repo => repo.GetTodo(fakeTodo.Id)).ReturnsAsync(fakeTodo);
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
 
@@ -117,6 +125,12 @@ namespace TodoWebApi.Tests.Controllers
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
             Assert.Equal(200, okResult.StatusCode);
+
+            var value = okResult.Value;
+            Assert.IsType<TodoDtoModel>(value);
+            var todoDto = (TodoDtoModel)value;
+            Assert.Equal(1, todoDto.Id);
+            Assert.Equal("FakeTitle", todoDto.Title);
         }
 
         [Fact]
