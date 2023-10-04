@@ -23,7 +23,7 @@ namespace TodoWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task TodoController_GetAllTodos_WithData_Return200()
+        public async Task TodoController_GetTodos_WithData_Return200()
         {
             var page = 1;
             var pageSize = 3;
@@ -45,7 +45,7 @@ namespace TodoWebApi.Tests.Controllers
                 Completed = dbModel.Completed
             }).ToList());
 
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+            _todoRepositoryMock.Setup(repo => repo.GetTodos(page, pageSize, filter))
                                .ReturnsAsync(testData);
 
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
@@ -66,13 +66,13 @@ namespace TodoWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task TodoController_GetAllTodos_NoData_Return404()
+        public async Task TodoController_GetTodos_NoData_Return404()
         {
             var page = 1;
             var pageSize = 3;
             var filter = "all";
 
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+            _todoRepositoryMock.Setup(repo => repo.GetTodos(page, pageSize, filter))
                                .ReturnsAsync((List<TodoDbModel>)null);
 
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
@@ -85,13 +85,13 @@ namespace TodoWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task TodoController_GetAllTodos_WithError_Return500()
+        public async Task TodoController_GetTodos_WithError_Return500()
         {
             var page = 1;
             var pageSize = 3;
             var filter = "all";
 
-            _todoRepositoryMock.Setup(repo => repo.GetAllTodos(page, pageSize, filter))
+            _todoRepositoryMock.Setup(repo => repo.GetTodos(page, pageSize, filter))
                 .ThrowsAsync(new Exception("Test Exception"));
 
             var sut = new TodoController(_todoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
